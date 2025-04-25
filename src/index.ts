@@ -4,7 +4,7 @@ class Laravel {
 
     constructor(url: string | undefined) {
         if (!url) {
-            throw new Error('NEXT_PUBLIC_LARAVEL_URL is not set');
+            throw new Error('URL is required for using this API');
         }
 
         this.baseUrl = url;
@@ -28,38 +28,53 @@ class Laravel {
         });
     }
 
-    async get(endpoint: string, params?: Record<string, unknown>) {
+    async get(endpoint: string, options?: {
+        params?: Record<string, unknown>,
+        next?: NextFetchRequestConfig
+    }) {
         const url = new URL(endpoint, this.baseUrl);
-        if (params) {
-            Object.keys(params).forEach(key =>
-                url.searchParams.append(key, String(params[key]))
+        if (options?.params) {
+            Object.keys(options.params).forEach(key =>
+                url.searchParams.append(key, String(options.params![key]))
             );
         }
 
-        const response = await this.request(url.toString(), {
+        const requestOptions: RequestInit = {
             method: 'GET',
-        });
+        };
 
+        // Add Next.js fetch options if provided
+        if (options?.next) {
+            // @ts-ignore - Next.js specific property
+            requestOptions.next = options.next;
+        }
+
+        const response = await this.request(url.toString(), requestOptions);
         return await response.json();
     }
 
-    async post(endpoint: string, body?: BodyInit | Record<string, unknown> | null) {
-        return this.sendRequest(endpoint, 'POST', body);
+    async post(endpoint: string, body?: BodyInit | Record<string, unknown> | null, nextOptions?: NextFetchRequestConfig) {
+        return this.sendRequest(endpoint, 'POST', body, nextOptions);
     }
 
-    async put(endpoint: string, body?: BodyInit | Record<string, unknown> | null) {
-        return this.sendRequest(endpoint, 'PUT', body);
+    async put(endpoint: string, body?: BodyInit | Record<string, unknown> | null, nextOptions?: NextFetchRequestConfig) {
+        return this.sendRequest(endpoint, 'PUT', body, nextOptions);
     }
 
-    async patch(endpoint: string, body?: BodyInit | Record<string, unknown> | null) {
-        return this.sendRequest(endpoint, 'PATCH', body);
+    async patch(endpoint: string, body?: BodyInit | Record<string, unknown> | null, nextOptions?: NextFetchRequestConfig) {
+        return this.sendRequest(endpoint, 'PATCH', body, nextOptions);
     }
 
-    async delete(endpoint: string, body?: BodyInit | Record<string, unknown> | null) {
-        return this.sendRequest(endpoint, 'DELETE', body);
+    async delete(endpoint: string, body?: BodyInit | Record<string, unknown> | null, nextOptions?: NextFetchRequestConfig) {
+        return this.sendRequest(endpoint, 'DELETE', body, nextOptions);
     }
 
-    private async sendRequest(endpoint: string, method: string, body?: BodyInit | Record<string, unknown> | null) {
+    private async sendRequest(
+        endpoint: string,
+        method: string,
+        body?: BodyInit | Record<string, unknown> | null,
+        nextOptions?: NextFetchRequestConfig
+    ) {
         const url = new URL(endpoint, this.baseUrl);
         const headers: Record<string, string> = {};
         let processedBody: BodyInit | null = null;
@@ -83,12 +98,19 @@ class Laravel {
             }
         }
 
-        const response = await this.request(url.toString(), {
+        const requestOptions: RequestInit = {
             method,
             headers,
             body: processedBody,
-        });
+        };
 
+        // Add Next.js fetch options if provided
+        if (nextOptions) {
+            // @ts-ignore - Next.js specific property
+            requestOptions.next = nextOptions;
+        }
+
+        const response = await this.request(url.toString(), requestOptions);
         return await response.json();
     }
 
@@ -101,6 +123,21 @@ class Laravel {
 
         return this;
     }
+
+    async csrf() {
+        return await this.get('/sanctum/csrf-cookie');
+    }
+
+    getUri(path: unknown = '') {
+        return (new URL(String(path), this.baseUrl)).toString();
+    }
+}
+
+// Type definition for Next.js fetch request config
+interface NextFetchRequestConfig {
+    revalidate?: number | false;
+    tags?: string[];
+    cache?: 'force-cache' | 'no-store';
 }
 
 export default Laravel;
