@@ -1,0 +1,31 @@
+{
+  "name": "laravel-spa-client",
+  "version": "0.1.0",
+  "description": "Laravel Sanctum SPA client for JavaScript/TypeScript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "jest"
+  },
+  "keywords": [
+    "laravel",
+    "sanctum",
+    "spa",
+    "api"
+  ],
+  "author": "Blue Flamingos",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blueflamingos/laravel-spa-client.git"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.1",
+    "typescript": "^5.8.3"
+  }
+}
