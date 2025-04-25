@@ -49,8 +49,7 @@ class Laravel {
             requestOptions.next = options.next;
         }
 
-        const response = await this.request(url.toString(), requestOptions);
-        return await response.json();
+        return await this.request(url.toString(), requestOptions);
     }
 
     async post(endpoint: string, body?: BodyInit | Record<string, unknown> | null, nextOptions?: NextFetchRequestConfig) {
