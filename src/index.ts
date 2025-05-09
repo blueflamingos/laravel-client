@@ -248,7 +248,7 @@ class Laravel {
         password: string,
         new_password: string,
         new_password_confirmation: string
-                   }) {
+    }) {
         return this.put('/api/user/update-password', data);
     }
 
