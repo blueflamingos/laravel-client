@@ -1,10 +1,10 @@
 <p align="center"><img src="/blue-flamingos-logo.png" alt="Blue Flamingos"></p>
 
-# Laravel SPA Client
+# Laravel Client
 
 A lightweight TypeScript client for interacting with Laravel Sanctum-protected APIs in SPA mode. Designed to work smoothly with NextJS and other frontend frameworks.
 
-[![npm version](https://img.shields.io/npm/v/laravel-spa-client.svg)](https://www.npmjs.com/package/laravel-spa-client)
+[![npm version](https://img.shields.io/npm/v/laravelclient.svg)](https://www.npmjs.com/package/laravelclient)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -19,19 +19,19 @@ A lightweight TypeScript client for interacting with Laravel Sanctum-protected A
 ## Installation
 
 ```bash
-npm install laravel-spa-client
+npm install laravelclient
 ```
 
 or
 
 ```bash
-yarn add laravel-spa-client
+yarn add laravelclient
 ```
 
 ## Basic Usage
 
 ```typescript
-import Laravel from 'laravel-spa-client';
+import Laravel from 'laravelclient';
 
 // Initialize with your Laravel backend URL
 const api = new Laravel(process.env.NEXT_PUBLIC_LARAVEL_URL);
@@ -119,7 +119,7 @@ This client has special support for NextJS App Router's data fetching and cachin
 'use client';
 
 import { useState, useEffect } from 'react';
-import Laravel from 'laravel-spa-client';
+import Laravel from 'laravelclient';
 
 const api = new Laravel(process.env.NEXT_PUBLIC_LARAVEL_URL);
 
@@ -141,7 +141,7 @@ export default function UserProfile() {
 ### Server Component with Cache Tags
 
 ```typescript
-import Laravel from 'laravel-spa-client';
+import Laravel from 'laravelclient';
 import {cookies} from "next/headers";
 
 const api = new Laravel(process.env.LARAVEL_API_URL);
@@ -204,7 +204,7 @@ To develop locally with your projects:
 1. Clone the repository
 2. Install dependencies: `npm install`
 3. Link for local development: `npm run yalc:publish`
-4. In your project: `yalc add laravel-spa-client`
+4. In your project: `yalc add laravelclient`
 5. Watch for changes: `npm run dev`
 
 ## License
