@@ -56,7 +56,7 @@ class Laravel {
   // Helper method to convert Response to LaravelResponse
   private async createLaravelResponse<T>(
     response: Response,
-    config: RequestInit
+    config: RequestInit,
   ): Promise<LaravelResponse<T>> {
     let data: T;
 
@@ -84,7 +84,7 @@ class Laravel {
 
   async request<T = any>(
     path: RequestInfo,
-    init: RequestInit = {}
+    init: RequestInit = {},
   ): Promise<LaravelResponse<T>> {
     const headers = new Headers(init.headers || {});
 
@@ -139,15 +139,23 @@ class Laravel {
   async get<T = any>(
     endpoint: string,
     options?: {
-      params?: Record<string, unknown>;
+      params?: Record<string, unknown> | string;
       next?: NextFetchRequestConfig;
-    }
+    },
   ): Promise<LaravelResponse<T>> {
     const url = new URL(endpoint, this.baseUrl);
+
     if (options?.params) {
-      Object.keys(options.params).forEach((key) =>
-        url.searchParams.append(key, String(options.params![key]))
-      );
+      if (typeof options.params === "string") {
+        // Raw query string - append directly
+        url.search = options.params;
+      } else {
+        // Object - convert to search params
+        const params = options.params as Record<string, unknown>;
+        Object.keys(params).forEach((key) =>
+          url.searchParams.append(key, String(params[key])),
+        );
+      }
     }
 
     const requestOptions: RequestInit = {
@@ -166,7 +174,7 @@ class Laravel {
   async post<T = any, D = any>(
     endpoint: string,
     body?: D,
-    nextOptions?: NextFetchRequestConfig
+    nextOptions?: NextFetchRequestConfig,
   ): Promise<LaravelResponse<T>> {
     return this.sendRequest<T, D>(endpoint, "POST", body, nextOptions);
   }
@@ -174,7 +182,7 @@ class Laravel {
   async put<T = any, D = any>(
     endpoint: string,
     body?: D,
-    nextOptions?: NextFetchRequestConfig
+    nextOptions?: NextFetchRequestConfig,
   ): Promise<LaravelResponse<T>> {
     return this.sendRequest<T, D>(endpoint, "PUT", body, nextOptions);
   }
@@ -182,7 +190,7 @@ class Laravel {
   async patch<T = any, D = any>(
     endpoint: string,
     body?: D,
-    nextOptions?: NextFetchRequestConfig
+    nextOptions?: NextFetchRequestConfig,
   ): Promise<LaravelResponse<T>> {
     return this.sendRequest<T, D>(endpoint, "PATCH", body, nextOptions);
   }
@@ -190,7 +198,7 @@ class Laravel {
   async delete<T = any, D = any>(
     endpoint: string,
     body?: D,
-    nextOptions?: NextFetchRequestConfig
+    nextOptions?: NextFetchRequestConfig,
   ): Promise<LaravelResponse<T>> {
     return this.sendRequest<T, D>(endpoint, "DELETE", body, nextOptions);
   }
@@ -199,7 +207,7 @@ class Laravel {
     endpoint: string,
     method: string,
     body?: D,
-    nextOptions?: NextFetchRequestConfig
+    nextOptions?: NextFetchRequestConfig,
   ): Promise<LaravelResponse<T>> {
     const url = new URL(endpoint, this.baseUrl);
     const headers: Record<string, string> = {};
@@ -285,7 +293,7 @@ class Laravel {
   }
 
   sendVerificationNotification<T = any>(
-    email: string
+    email: string,
   ): Promise<LaravelResponse<T>> {
     return this.post<T>("/api/email/verification-notification", {
       email,
@@ -298,7 +306,7 @@ class Laravel {
     query: {
       expires: string;
       signature: string;
-    }
+    },
   ): Promise<LaravelResponse<T>> {
     return this.get<T>(`/api/verify-email/${userId}/${hash}`, {
       params: query,
@@ -329,10 +337,11 @@ class Laravel {
   }
 
   updateAccount<T = any>(
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Promise<LaravelResponse<T>> {
     return this.put<T>("/api/user", data);
   }
 }
 
 export default Laravel;
+export { validation_messages } from "./validation-messages";
