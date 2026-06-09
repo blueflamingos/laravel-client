@@ -19,6 +19,7 @@ class Laravel {
   private cookies: string | null;
   private csrfToken: string | null;
   private bearerToken: string | null;
+  private extraHeaders: Record<string, string>;
 
   private tokenResolver?: () => Promise<string | null> | string | null;
 
@@ -30,6 +31,7 @@ class Laravel {
     this.cookies = null;
     this.csrfToken = null;
     this.bearerToken = null;
+    this.extraHeaders = {};
   }
 
   setTokenResolver(resolver: () => Promise<string | null> | string | null) {
@@ -122,6 +124,11 @@ class Laravel {
       headers.set("Authorization", `Bearer ${this.bearerToken}`);
     }
 
+    // Apply any per-request custom headers last so they can override defaults
+    Object.entries(this.extraHeaders).forEach(([key, value]) => {
+      headers.set(key, value);
+    });
+
     const config = {
       ...init,
       credentials: "include" as RequestCredentials,
@@ -130,8 +137,9 @@ class Laravel {
 
     const response = await fetch(path, config);
 
-    // Reset cookies for next request
+    // Reset per-request state for the next request
     this.cookies = null;
+    this.extraHeaders = {};
 
     return this.createLaravelResponse<T>(response, config);
   }
@@ -274,6 +282,11 @@ class Laravel {
 
   withToken(token?: string | null) {
     this.bearerToken = token || null;
+    return this;
+  }
+
+  withHeaders(headers: Record<string, string>) {
+    this.extraHeaders = { ...this.extraHeaders, ...headers };
     return this;
   }
 

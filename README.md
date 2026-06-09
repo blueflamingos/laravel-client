@@ -90,6 +90,14 @@ laravel.withCookies('session_cookie=value; other_cookie=value2');
 laravel.withCookies(null);
 ```
 
+#### Custom Headers
+
+```typescript
+// Add one or more custom headers to the next request. Chainable, and applied
+// after the built-in headers so they can override them. Reset after each request.
+laravel.withHeaders({ 'X-Cart-Token': token }).get('/api/carts');
+```
+
 ### HTTP Methods
 
 #### GET Requests
